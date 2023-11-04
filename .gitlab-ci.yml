@@ -1,0 +1,22 @@
+variables:
+  GIT_DEPTH: 10
+  GIT_CLEAN_FLAGS: none
+  BUILD_PROFILE: dev
+
+stages:
+  - build
+  - test
+  - generate_artifacts
+  - deploy
+before_script:
+  - oc login --token=$openshift_token --server=$openshift_server
+  - oc project tshalash-dev
+build_job:
+  stage: build
+  tags:
+    - backend
+  script:
+    - mvn clean package
+    - mvn oc:build
+    - mvn oc:resource
+    - mvn oc:apply
